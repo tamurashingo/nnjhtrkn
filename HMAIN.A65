@@ -3,23 +3,23 @@
 ;	<NINJA HATTORI KUN>  for  FAMILY COMPUTER
 ;
 ;
-	if	debug = 1
-	ORG	$ed			; for debug
+	.if	debug = 1
+	.ORG	$ed			; for debug
 	jmp	nmivec			; for debug
 ;
-	ORG	DEBSTR			;$a000
+	.ORG	DEBSTR			;$a000
 ;
 start:	nop
 	cld
 ;
-	else
+	.else
 ;
-	ORG	$fffa
+	.ORG	$fffa
 	dw	nmivec			; nmi vector
 	dw	start			; reset vector
 	dw	irqvec			; irq vector
 ;
-	ORG	ROMSTR
+	.ORG	ROMSTR
 ;
 start:	sei
 	cld
@@ -32,7 +32,7 @@ strlp0:	lda	stareg
 strlp1:	lda	stareg
 	bpl	strlp1
 ;
-	endif
+	.endif
 ;
 gstart:	ldx	#$ff
 	txs
@@ -79,15 +79,15 @@ title:
 ;
 nmivec:	; nmi cmd
 ;
-	if	debug = 1
+	.if	debug = 1
 	cli
-	endif
+	.endif
 ;
 	ALLPSH
 ;
 sprdma:	lda	#0
 	sta	oamadr
-	lda	#high oambuf
+	lda	>oambuf ; #high
 	sta	dmabnk			; sprite dma
 ;
 	lda	#0
@@ -528,9 +528,9 @@ extinc:
 	sta	lfeodr
 extirt:	rts
 ;
-SCRDB	MACRO	df,dt,ds,df
-	db	%4,%3,%2,%1
-	ENDM
+.macro	SCRDB	df1,dt,ds1,df2
+	db	df2,ds1,dt,df1
+.endmacro
 ;
 scrdat:
 	SCRDB	0,0,0,0	;0
@@ -624,8 +624,8 @@ numslp:	inx
 ;
 scrprt:
 ;power
-	lda	#high($2000+32*3+29)
-	ldx	#low($2000+32*3+29)
+	lda	>($2000+32*3+29) ; #high
+	ldx	<($2000+32*3+29) ; #low
 	sta	vramad
 	stx	vramad
 	lda	mandmg
@@ -633,8 +633,8 @@ scrprt:
 	adc	#$30
 	sta	vramdt	
 ;time
-	lda	#high($2000+32*2+27)
-	ldx	#low($2000+32*2+27)
+	lda	>($2000+32*2+27) ; #high
+	ldx	<($2000+32*2+27) ; #low
 	sta	vramad
 	stx	vramad
 	ldy	#2
@@ -651,8 +651,8 @@ upswrt:	lda	ups,y	;x
 	dey	;	dex
 	bpl	upswrt
 ;score
-scrpr1:	lda	#high($2000+32+2)	;8)
-	ldx	#low($2000+32+2)	;8)
+scrpr1:	lda	>($2000+32+2)	;8) ; #high
+	ldx	<($2000+32+2)	;8) ; #low
 	sta	vramad
 	stx	vramad
 	ldx	#0
@@ -665,8 +665,8 @@ scrplp:	lda	scoreb,x
 	lda	#'0'
 	sta	vramdt
 ;high score
-	lda	#high($2000+32+12)	;20)
-	ldx	#low($2000+32+12)	;20)
+	lda	>($2000+32+12)	;20) ; #high
+	ldx	<($2000+32+12)	;20) ; #low
 	sta	vramad
 	stx	vramad
 	ldx	#0
@@ -679,8 +679,8 @@ topplp:	lda	hscreb,x
 	lda	#'0'
 	sta	vramdt
 ;left
-	lda	#high($2000+32*1+25)	;20)
-	ldx	#low($2000+32*1+25)	;20)
+	lda	>($2000+32*1+25)	;20) ; #high
+	ldx	<($2000+32*1+25)	;20) ; #low
 	sta	vramad
 	stx	vramad
 	lda	leftb+0
@@ -816,16 +816,16 @@ scrclp:	sta	score,x
 	rts
 ;
 gamesc:
-	lda	#high($2000+32*3+27)
-	ldx	#low($2000+32*3+27)
+	lda	>($2000+32*3+27) ; #high
+	ldx	<($2000+32*3+27) ; #low
 	jsr	setadr
 	lda	#'P'
 	sta	vramdt
 	lda	#$3a
 	sta	vramdt
 ;
-	lda	#high($2000+32*2+26)
-	ldx	#low($2000+32*2+26)
+	lda	>($2000+32*2+26) ; #high
+	ldx	<($2000+32*2+26) ; #low
 	jsr	setadr
 	lda	#$ce	;mini clock
 	sta	vramdt
@@ -836,13 +836,16 @@ scmsst:	PTRSET	scrmes,indexr
 scrmes:
 	dw	$2000+4	;start adr.
 	db	'SCORE'
-	ECHO	2
+;	ECHO	2
 	db	SPCCOD
-	ENDM
+	db	SPCCOD
+;	ENDM
 	db	'HIGH',SPCCOD,'SCORE'
-	ECHO	3
+;	ECHO	3
 	db	SPCCOD
-	ENDM
+	db	SPCCOD
+	db	SPCCOD
+;	ENDM
 	db	'LEFT'	
 	db	0
 ;
@@ -952,9 +955,9 @@ gamelp:	;	main loop !!
 	jsr	scrbug	;scroll timing
 	jsr	demkey	;domo key
 ;
-	if	satsu = 1
+	.if	satsu = 1
 	jsr	pictur	;satsuei pause
-	endif
+	.endif
 ;
 	jsr	matsu	;pause
 ;
@@ -1073,13 +1076,13 @@ enmini:	jsr	tamini
 	jsr	bosini
 	jmp	tikini
 ;
-	if	satsu = 1
+	.if	satsu = 1
 pictur:	
 	lda	joytwe
 	and	#$cf
 	bne	pictur
 	rts
-	endif
+	.endif
 ;
 matsu:	;pause
 	lda	joyone
@@ -1239,12 +1242,12 @@ letmes:	dw	$2000+(32*11+12)
 	db	'LET',$27,'S',SPCCOD,'GO',0
 ;
 clemgt:
-	ldx	#low ($2000+32*6+23)
-	lda	#high ($2000+32*6+23)
+	ldx	<($2000+32*6+23) ; #low
+	lda	>($2000+32*6+23) ; #high
 	bne	aermgs	;	jmp	aermgs
 aremgt:
-	ldx	#low ($2000+32*8+18)
-	lda	#high ($2000+32*8+18)
+	ldx	<($2000+32*8+18) ; #low
+	lda	>($2000+32*8+18) ; #high
 aermgs:	jsr	setadr
 ;
 	ldy	#'0'
@@ -1494,8 +1497,8 @@ grdupm:
 	jsr	mesprt
 	PTRSET	cmmes5,indexr
   	jsr	mesprt
-	lda	#high ($2000+(32*9+17))
-	ldx	#low ($2000+(32*9+17))
+	lda	>($2000+(32*9+17)) ; #high
+	ldx	<($2000+(32*9+17)) ; #low
 	jsr	setadr
 	ldx	#0
 gredwr:	lda	grade,x
@@ -1822,13 +1825,13 @@ tkswrt:
 	ldy	#$35
 	sty	timbuf+3	
 ;
-	ldx	#low($2000+32*14+20)
-	lda	#high($2000+32*14+20)
+	ldx	<($2000+32*14+20) ; #low
+	lda	>($2000+32*14+20) ; #high
 	ldy	area
 	cpy	#15
 	bne	*+6
-	ldx	#low($2000+32*18+20)
-	lda	#high($2000+32*18+20)
+	ldx	<($2000+32*18+20) ; #low
+	lda	>($2000+32*18+20) ; #high
 	jsr	setadr
 	ldx	#0
 tskdlp:	lda	tksbuf,x
@@ -1837,13 +1840,13 @@ tskdlp:	lda	tksbuf,x
 	cpx	#3
 	bcc	tskdlp
 ;
-	ldx	#low($2000+32*12+20)
-	lda	#high($2000+32*12+20)
+	ldx	<($2000+32*12+20) ; #low
+	lda	>($2000+32*12+20) ; #high
 	ldy	area
 	cpy	#15
 	bne	*+6
-	ldx	#low($2000+32*16+20)
-	lda	#high($2000+32*16+20)
+	ldx	<($2000+32*16+20) ; #low
+	lda	>($2000+32*16+20) ; #high
 	jsr	setadr
 	ldx	#0
 timdlp:	lda	timbuf,x

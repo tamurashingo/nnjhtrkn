@@ -2,7 +2,7 @@
 ;
 ;	<NINJA HATTORI KUN> for  FAMILY COMPUTER
 ;
-.feature	labels_without_colons, pc_assignment, loose_char_term
+.feature	labels_without_colons, pc_assignment, loose_string_term, bracket_as_indirect, underline_in_numbers
 .setcpu		"6502"
 .define		equ		=
 .define		ds		.res
