@@ -2033,4 +2033,3 @@ hatcmp:
 hatsnm:
 	db	$c8,$c9,$7e,$7f,$d7,$fc
 ;
-

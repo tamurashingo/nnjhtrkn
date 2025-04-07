@@ -1394,4 +1394,3 @@ spbpat:
 	db	$fa,$fb,$ee,$ef	;inrou
 	db	$b9,$8f,$de,$df	;key
 ;
-

@@ -1,1 +1,1 @@
-asm65 hat h=hat.prg
+asm65 hat h=hat.prg
