@@ -2,7 +2,15 @@
 ;
 ;	<NINJA HATTORI KUN> for  FAMILY COMPUTER
 ;
-	cpu	'6502'
+.feature	labels_without_colons, pc_assignment, loose_char_term
+.setcpu		"6502"
+.define		equ		=
+.define		ds		.res
+.define		DS		.res
+.define		db		.BYTE
+.define		dw		.WORD
+
+
 ;
 ;
 adrchk	equ	0	;check memory location
@@ -41,6 +49,7 @@ CLRCOD	equ	$9f	;toumei
 SPCCOD	equ	$8e	;space
 ;
 ;	org	$0000
+.segment	"ZP"
 ;--------------- zero page work for prog. -------------------------
 ;		< Don't care !!!!!!! >
 aa	ds	1
@@ -171,7 +180,7 @@ naksfl	ds	1	;naki sound stp
 ;
 ;-------------------------------------------------------------
 ;	<<<< hattori kun work area >>>>
-	msg	*,'manx',scrolh,':scrolh'
+;	msg	*,'manx',scrolh,':scrolh'
 manxl	ds	1	;hattori x pos low
 manxh	ds	1	;///////////// high
 many	ds	1	;/////// y ///
@@ -226,7 +235,7 @@ mchflp	ds	1
 ;
 mchatr	ds	1
 ;---------------------------------------------------------
-bittbl
+;bittbl
 ;
 rigbtn
 bit0st	ds	1
@@ -262,7 +271,7 @@ EZ	equ	*
 ;----------------------------------------------------------------------------
 ;--------------------- scores -----------------------------
 ;
-	org	$140
+	.org	$140
 scoreb	ds	7
 hscreb	ds	7
 leftb	ds	2
@@ -285,7 +294,7 @@ totdpt	ds	1
 ;	work $200 ==> $6ff
 ;
 ;
-	org	$200
+	.org	$200
 ;
 colwrk	ds	32	;color gen. work
 ;
@@ -319,7 +328,7 @@ dghsta	ds	1
 ;	ninpou status
 NINMAX	equ	12
 ;
-	msg	*,':ninsta'
+;	msg	*,':ninsta'
 ninsta	ds	NINMAX
 ninfwk	ds	1
 nincnt	ds	1
@@ -355,7 +364,7 @@ abtfnc	ds	1	;a button function
 ;
 ;---------------------------------------------------------------
 ;
-	msg	*,':gamef,clrflg,ovrflg'
+;	msg	*,':gamef,clrflg,ovrflg'
 gamef:	ds	1	;game flag
 clrflg	ds	1	;area clear ok
 ovrflg	ds	1	;gameover flag
@@ -365,7 +374,7 @@ demtim	ds	1	;////// time
 scrdbl	ds	1	;boss request chikuwa bonus bouble
 savscr	ds	1
 ;
-	msg	*,':area'
+;	msg	*,':area'
 area	ds	1	;area no. 0-15(1-16)
 grade	ds	3	;grade no.
 nanido	ds	1	;difficalty
@@ -500,7 +509,7 @@ tksy	ds	1
 tkscnt	ds	1
 ;
 tksbcn	ds	1
-	msg	*,':bug'
+;	msg	*,':bug'
 tksscn	ds	1
 tksedg	ds	1
 ;
@@ -528,157 +537,158 @@ snmy	ds	1
 ;
 ;-------------------------------------------------------------
 ;
-	if	* > $700
-	err	;address $700
-	endif
+	.if	* > $700
+	.error	"address $700 over"
+	.endif
 ;
 ;   $700 ====> $7ff  oam buffer
 ;
-	org	$700
+	.org	$700
 ;
 oambuf	ds	256	;$700
 ;
 ;----------------- macros ------------------------------------------
 ;
 ;
-PSHX	MACRO
+.macro	PSHX
 	txa
 	pha
-	ENDM
+.endmacro
 ;
-PULX	MACRO
+.macro	PULX
 	pla
 	tax
-	ENDM
+.endmacro
 ;
-PSHY	MACRO
+.macro	PSHY
 	tya
 	pha
-	ENDM
+.endmacro
 ;
-PULY	MACRO
+.macro	PULY
 	pla
 	tay
-	ENDM
+.endmacro
 ;
-ALLPSH	MACRO
+.macro	ALLPSH
 	pha
 	PSHX
 	PSHY
-	ENDM
+.endmacro
 ;
-ALLPLU	MACRO
+.macro	ALLPLU
 	PULY
 	PULX
 	pla
-	ENDM
+.endmacro
 ;
-PTRSET	MACRO	DATA,PTR
-	lda	#low %1
-	sta	%2
-	lda	#high %1
-	sta	%2+1
-	ENDM
+.macro	PTRSET	DATA,PTR
+	lda	z:<DATA ; #low
+	sta	PTR
+	lda	z:>DATA ; #high
+	sta	PTR+1
+.endmacro
 ;
-INCPTR	MACRO	PTR
-	inc	%1
+.macro	INCPTR	PTR
+	inc	PTR
 	bne	*+4
-	inc	%1+1
-	ENDM
+	inc	PTR+1
+.endmacro
 ;
-DECPTR	MACRO	PTR
+.macro	DECPTR	PTR
 	sec
-	lda	%1
+	lda	PTR
 	sbc	#1
-	sta	%1
+	sta	PTR
 	bcs	*+4
-	dec	%1+1
-	ENDM	
+	dec	PTR+1
+.endmacro
 ;
-PUSHM	MACRO	ADDR
-	lda	%1
+.macro	PUSHM	ADDR
+	lda	ADDR
 	pha
-	ENDM
+.endmacro
 ;
-POPM	MACRO	ADDR
+.macro	POPM	ADDR
 	pla
-	sta	%1
-	ENDM
+	sta	ADDR
+.endmacro
 ;
-JTBL	MACRO	DATA
-	dw	%1 - 1
-	ENDM	
+.macro	JTBL	DATA
+	dw	DATA - 1
+.endmacro
 ;
-INDCAL	MACRO	JMPVEC,REG
-	lda	#high ?%K
+.macro	INDCAL	JMPVEC,REG
+	.local RET
+	lda	z>RET ; #high
 	pha
-	lda	#low ?%K
+	lda	z:<RET ; #low
 	pha
-	lda	%1+1,%2
+	lda	JMPVEC+1,REG
 	pha
-	lda	%1+0,%2
+	lda	JMPVEC+0,REG
 	pha
-?%K:	rts
-	ENDM
+RET:	rts
+.endmacro
 ;
-INDJMP	MACRO	JMPVEC,REG
-	lda	%1+1,%2
+.macro	INDJMP	JMPVEC,REG
+	lda	JMPVEC+1,REG
 	pha
-	lda	%1+0,%2
+	lda	JMPVEC+0,REG
 	pha
 	rts
-	ENDM
+.endmacro
 ;
 ;
-ANDDB	MACRO	ANDDAT,NOMAL
-	db	%1 and $fc,%2
-	ENDM
+.macro	ANDDB	ANDDAT,NOMAL
+	db	ANDDAT .BITAND $fc,NORMAL
+.endmacro
 ;
-CKIDB	MACRO	XLOW,XHIGH,YDATA
-	db	%1 and $f8,%2,%3 and $f8
-	ENDM
+.macro	CKIDB	XLOW,XHIGH,YDATA
+	db	XLOW .BITAND $f8,XHIGH,YDATA .BITAND $f8
+.endmacro
 ;
-SPBDB	MACRO	XLOW,XHIGH,YDATA
-	db	%1 * 8,%2,%3 * 8 + $30
-	ENDM
-BOSDB	MACRO	XCHR0,YCHR0
-	db	%1*8,%2*8+$30
-	ENDM
+.macro	SPBDB	XLOW,XHIGH,YDATA
+	db	XLOW * 8,XHIGH,YDATA * 8 + $30
+.endmacro
+.macro	BOSDB	XCHR0,YCHR0
+	db	XCHR0*8,YCHR0*8+$30
+.endmacro
 ;
 ;------------  link files  --------------------
 ;
-	IF	adrchk = 0
+	.IF	adrchk = 0
 ;
-	link	hmain.a65
-	link	hatmov.a65
-	link	ninpou.a65
-	link	hatenm.a65
-	link	hatbou.a65
-	link	hattil.a65
-	link	rechat.a65
-	link	hatmus.a65
+	.include	"hmain.a65"
+	.include	"hatmov.a65"
+	.include	"ninpou.a65"
+	.include	"hatenm.a65"
+	.include	"hatbou.a65"
+	.include	"hattil.a65"
+	.include	"rechat.a65"
+	.include	"hatmus.a65"
 ;
-	link	HTCLEAR.SCR
-	link	HTBGM.SCR
-	link	HTOVER.SCR
-	link	HTCOMP.SCR
-	link	HTCAT.SCR
-	link	HTFIRE.SCR
-	link	HTTOJO.SCR
-	link	HTBONUS.SCR
-	link	HTWARP.SCR
+	.include	"HTCLEAR.SCR"
+	.include	"HTBGM.SCR"
+	.include	"HTOVER.SCR"
+	.include	"HTCOMP.SCR"
+	.include	"HTCAT.SCR"
+	.include	"HTFIRE.SCR"
+	.include	"HTTOJO.SCR"
+	.include	"HTBONUS.SCR"
+	.include	"HTWARP.SCR"
 ;
-	link	hatmap.a65
+	.include	"HATMAP.A65"
 ;
-	ENDIF
+	.ENDIF
 ;----------------------------------------------
 ;
 ;
-	msg	'zero page use:',EZ,'Hbytes,zero page free:',$ed-EZ,'Hbytes'
-	msg	'debug = ',debug
-	msg	'picture = ',satsu
-	if	EZ > $ed
-	msg	'out of zero page area'
-	endif
+;	msg	'zero page use:',EZ,'Hbytes,zero page free:',$ed-EZ,'Hbytes'
+;	msg	'debug = ',debug
+;	msg	'picture = ',satsu
+;	if	EZ > $ed
+;	msg	'out of zero page area'
+;	endif
 ;
 ;
