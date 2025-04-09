@@ -694,7 +694,7 @@ RET:	rts
 	.include	"HTBONUS.SCR"
 	.include	"HTWARP.SCR"
 ;
-	.include	"HATMAP.A65"
+	.include	"hatmap.a65"
 ;
 	.ENDIF
 ;----------------------------------------------
