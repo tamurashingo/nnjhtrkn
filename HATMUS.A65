@@ -955,47 +955,47 @@ FRQTBL:	DW	$0000	; REST
 ;
 ;
 ;
-MCTMPO	MACRO	%1
-	ENDM
+.macro	MCTMPO	p1
+.endmacro
 ;
-MCREST	MACRO
+.macro	MCREST
 	DB	0
-	ENDM
+.endmacro
 ;
-MCTONE	MACRO	%1,%2
-	DB	(%1-3)*12+%2+1-3
-	ENDM
+.macro	MCTONE	p1,p2
+	DB	(p1-3)*12+p2+1-3
+.endmacro
 ;
-MCLENG	MACRO	%1
-	DB	%1+$80
-	ENDM
+.macro	MCLENG	p1
+	DB	p1+$80
+.endmacro
 ;
-MCEND	MACRO
+.macro	MCEND
 	DB	$FF
-	ENDM
+.endmacro
 ;
-MCDC	MACRO
+.macro	MCDC
 	DB	$FE
-	ENDM
+.endmacro
 ;
-MCRPB	MACRO	%1
-	DB	$FD,%1
-	ENDM
+.macro	MCRPB	p1
+	DB	$FD,p1
+.endmacro
 ;
-MCRPE	MACRO
+.macro	MCRPE
 	DB	$FC
-	ENDM
+.endmacro
 ;
-MCTAI	MACRO
+.macro	MCTAI
 	DB	$FB
-	ENDM
+.endmacro
 ;
-MCTAIE	MACRO
+.macro	MCTAIE
 	DB	$FA
-	ENDM
+.endmacro
 ;
-MCLEN	MACRO	%1
-	ENDM
+.macro	MCLEN	p1
+.endmacro
 ;
 DATATP:
 MTBL1:	DW	MTOJOB

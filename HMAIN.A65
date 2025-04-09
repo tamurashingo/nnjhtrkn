@@ -14,12 +14,14 @@ start:	nop
 ;
 	.else
 ;
+	.segment "VECTORS"
 	.ORG	$fffa
 	dw	nmivec			; nmi vector
 	dw	start			; reset vector
 	dw	irqvec			; irq vector
 ;
 	.ORG	ROMSTR
+	.segment "CODE"
 ;
 start:	sei
 	cld
@@ -261,7 +263,7 @@ clssub:
 	sta	clsdat
 	lda	#$20			; vram address 2000h
 	ldx	#0
-	jsr	setadr
+	jsr	a:setadr
 	ldy	#$08
 	ldx	#$00
 	lda	clsdat		;#CLRCOD		;#$20			; space code (20h)
@@ -1544,7 +1546,7 @@ overok:
 	sta	muscmd
 	sta	effcmd
 ;
-	jsr	scrnoff
+	jsr	scrnof
 	lda	creg0m
 	ora	#$08
 	sta	creg0m

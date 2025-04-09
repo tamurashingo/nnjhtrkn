@@ -2,11 +2,10 @@
 ;
 ;	<NINJA HATTORI KUN> for  FAMILY COMPUTER
 ;
-.feature	labels_without_colons, pc_assignment, loose_string_term, bracket_as_indirect, underline_in_numbers
+.feature	labels_without_colons, pc_assignment, loose_string_term, bracket_as_indirect, underline_in_numbers, force_range
 .setcpu		"6502"
 .define		equ		=
 .define		ds		.res
-.define		DS		.res
 .define		db		.BYTE
 .define		dw		.WORD
 
@@ -48,8 +47,23 @@ ARETIM	equ	180	;240	;area clear time
 CLRCOD	equ	$9f	;toumei
 SPCCOD	equ	$8e	;space
 ;
-;	org	$0000
-.segment	"ZP"
+
+.segment "HEADER"
+
+INES_MAPPER = 0 ; 0 = NROM
+INES_MIRROR = 1 ; 0 horizontal, 1 vertical
+INES_SRAM = 0;
+
+.byte 'N', 'E', 'S', $1A
+.byte $02 ; 16k PRG chunk count
+.byte $01 ; 8k CHR chunk count
+.byte INES_MIRROR | (INES_SRAM << 1) | ((INES_MAPPER & $0F) << 4)
+.byte (INES_MAPPER & %11110000)
+.byte $0, $0, $0, $0, $0, $0, $0, $0 ; padding
+
+
+.segment "ZEROPAGE"
+	.org	$0000
 ;--------------- zero page work for prog. -------------------------
 ;		< Don't care !!!!!!! >
 aa	ds	1
@@ -235,7 +249,7 @@ mchflp	ds	1
 ;
 mchatr	ds	1
 ;---------------------------------------------------------
-;bittbl
+bittbl
 ;
 rigbtn
 bit0st	ds	1
@@ -271,6 +285,7 @@ EZ	equ	*
 ;----------------------------------------------------------------------------
 ;--------------------- scores -----------------------------
 ;
+.segment "BSS"
 	.org	$140
 scoreb	ds	7
 hscreb	ds	7
@@ -543,6 +558,7 @@ snmy	ds	1
 ;
 ;   $700 ====> $7ff  oam buffer
 ;
+.segment "OAM"
 	.org	$700
 ;
 oambuf	ds	256	;$700
@@ -620,7 +636,7 @@ oambuf	ds	256	;$700
 ;
 .macro	INDCAL	JMPVEC,REG
 	.local RET
-	lda	z>RET ; #high
+	lda	z:>RET ; #high
 	pha
 	lda	z:<RET ; #low
 	pha
@@ -641,7 +657,7 @@ RET:	rts
 ;
 ;
 .macro	ANDDB	ANDDAT,NOMAL
-	db	ANDDAT .BITAND $fc,NORMAL
+	db	ANDDAT .BITAND $fc,NOMAL
 .endmacro
 ;
 .macro	CKIDB	XLOW,XHIGH,YDATA
@@ -659,7 +675,7 @@ RET:	rts
 ;
 	.IF	adrchk = 0
 ;
-	.include	"hmain.a65"
+	.include	"HMAIN.A65"
 	.include	"hatmov.a65"
 	.include	"ninpou.a65"
 	.include	"hatenm.a65"
