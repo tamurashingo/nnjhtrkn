@@ -58,11 +58,12 @@ INES_SRAM = 0;
 .byte $02 ; 16k PRG chunk count
 .byte $01 ; 8k CHR chunk count
 .byte INES_MIRROR | (INES_SRAM << 1) | ((INES_MAPPER & $0F) << 4)
-.byte (INES_MAPPER & %11110000)
-.byte $0, $0, $0, $0, $0, $0, $0, $0 ; padding
+.byte (INES_MAPPER & $F0)
+.res 8, 0
 
 
 .segment "ZEROPAGE"
+.zeropage
 	.org	$0000
 ;--------------- zero page work for prog. -------------------------
 ;		< Don't care !!!!!!! >
@@ -86,6 +87,9 @@ scesav	ds	1
 savex	ds	1
 savey	ds	1
 ;
+
+
+.segment "BSS"
 ;----------------  joy work -------------------
 joyone	ds	1	;joy pad one
 joytwe	ds	1	;/////// twe
@@ -194,7 +198,7 @@ naksfl	ds	1	;naki sound stp
 ;
 ;-------------------------------------------------------------
 ;	<<<< hattori kun work area >>>>
-;	msg	*,'manx',scrolh,':scrolh'
+	.out	.sprintf("%04X manx, %04X:scrolh", *, scrolh)
 manxl	ds	1	;hattori x pos low
 manxh	ds	1	;///////////// high
 many	ds	1	;/////// y ///
@@ -285,7 +289,6 @@ EZ	equ	*
 ;----------------------------------------------------------------------------
 ;--------------------- scores -----------------------------
 ;
-.segment "BSS"
 	.org	$140
 scoreb	ds	7
 hscreb	ds	7
@@ -311,6 +314,7 @@ totdpt	ds	1
 ;
 	.org	$200
 ;
+.segment "WORK"
 colwrk	ds	32	;color gen. work
 ;
 gamen:	ds	6*64	;384
@@ -343,7 +347,7 @@ dghsta	ds	1
 ;	ninpou status
 NINMAX	equ	12
 ;
-;	msg	*,':ninsta'
+	.out	.sprintf("%04X:ninsta", *)
 ninsta	ds	NINMAX
 ninfwk	ds	1
 nincnt	ds	1
@@ -379,7 +383,7 @@ abtfnc	ds	1	;a button function
 ;
 ;---------------------------------------------------------------
 ;
-;	msg	*,':gamef,clrflg,ovrflg'
+	.out	.sprintf("%04X:gamef,clrflg,ovrflg", *)
 gamef:	ds	1	;game flag
 clrflg	ds	1	;area clear ok
 ovrflg	ds	1	;gameover flag
@@ -389,7 +393,7 @@ demtim	ds	1	;////// time
 scrdbl	ds	1	;boss request chikuwa bonus bouble
 savscr	ds	1
 ;
-;	msg	*,':area'
+	.out	.sprintf("%04X:area", *)
 area	ds	1	;area no. 0-15(1-16)
 grade	ds	3	;grade no.
 nanido	ds	1	;difficalty
@@ -524,7 +528,7 @@ tksy	ds	1
 tkscnt	ds	1
 ;
 tksbcn	ds	1
-;	msg	*,':bug'
+	.out	.sprintf("%04X:bug", *)
 tksscn	ds	1
 tksedg	ds	1
 ;
@@ -599,9 +603,9 @@ oambuf	ds	256	;$700
 .endmacro
 ;
 .macro	PTRSET	DATA,PTR
-	lda	z:<DATA ; #low
+	lda	#(<(DATA)) ; #low
 	sta	PTR
-	lda	z:>DATA ; #high
+	lda	#(>(DATA)) ; #high
 	sta	PTR+1
 .endmacro
 ;
@@ -636,9 +640,9 @@ oambuf	ds	256	;$700
 ;
 .macro	INDCAL	JMPVEC,REG
 	.local RET
-	lda	z:>RET ; #high
+	lda	#(>(RET)) ; #high
 	pha
-	lda	z:<RET ; #low
+	lda	#(<(RET)) ; #low
 	pha
 	lda	JMPVEC+1,REG
 	pha
@@ -676,13 +680,13 @@ RET:	rts
 	.IF	adrchk = 0
 ;
 	.include	"HMAIN.A65"
-	.include	"hatmov.a65"
-	.include	"ninpou.a65"
-	.include	"hatenm.a65"
-	.include	"hatbou.a65"
-	.include	"hattil.a65"
-	.include	"rechat.a65"
-	.include	"hatmus.a65"
+	.include	"HATMOV.A65"
+	.include	"NINPOU.A65"
+	.include	"HATENM.A65"
+	.include	"HATBOU.A65"
+	.include	"HATTIL.A65"
+	.include	"RECHAT.A65"
+	.include	"HATMUS.A65"
 ;
 	.include	"HTCLEAR.SCR"
 	.include	"HTBGM.SCR"
@@ -694,17 +698,19 @@ RET:	rts
 	.include	"HTBONUS.SCR"
 	.include	"HTWARP.SCR"
 ;
-	.include	"hatmap.a65"
+	.include	"HATMAP.A65"
+;.segment "CHR"
+;	.incbin		"ninja.chr"
 ;
 	.ENDIF
 ;----------------------------------------------
 ;
 ;
-;	msg	'zero page use:',EZ,'Hbytes,zero page free:',$ed-EZ,'Hbytes'
-;	msg	'debug = ',debug
-;	msg	'picture = ',satsu
-;	if	EZ > $ed
-;	msg	'out of zero page area'
-;	endif
+	.out	.sprintf("zero page use:%04XHbytes,zero page free:%04XHbytes", EZ, $ed-EZ)
+	.out	.sprintf("debug = %d",debug)
+	.out	.sprintf("picture = %d",satsu)
+	.if	EZ > $ed
+	.out	'out of zero page area'
+	.endif
 ;
 ;

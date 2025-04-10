@@ -24,9 +24,9 @@ tilmak:	;hattori title make
 	jsr	scmsst
 	jsr	scrpr1
 ;
-	lda	<($2000 + (5 * 32 + 6)) ; #low
+	lda	#(<($2000 + (5 * 32 + 6))) ; #low
 	sta	p0+0
-	lda	>($2000 + (5 * 32 + 6)) ; #high
+	lda	#(>($2000 + (5 * 32 + 6))) ; #high
 	sta	p0+1
 	lda	#8
 	sta	indexr+1

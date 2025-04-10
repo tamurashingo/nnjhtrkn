@@ -43,7 +43,7 @@ prensk:	dex
 	lda	#8	;16
 	sta	tamrpt
 ;
-	ldx	<(mizflg - takflg) ; #low
+	ldx	#(<(mizflg - takflg)) ; #low
 	lda	#0
 prenl1:	
 	sta	takflg,x
@@ -724,10 +724,10 @@ shndsp:
 ;	clc
 ;	adc	pptr+0
 	clc
-	adc	z:<shnpat ; #low
+	adc	#(<shnpat) ; #low
 	sta	pptr+0
 	lda	#0
-	adc	z:>shnpat ; #high
+	adc	#(>shnpat) ; #high
 	sta	pptr+1
 ;
 	lda	shnflg
@@ -1370,10 +1370,10 @@ spbdok:	and	#$7f
 	asl	a
 	asl	a
 	clc	
-	adc	z:<spbpat ; #low
+	adc	#(<spbpat) ; #low
 	sta	pptr+0
 	lda	#0
-	adc	z:>spbpat ; #high
+	adc	#(>spbpat) ; #high
 	sta	pptr+1
 	lda	spbxl
 	sta	pxl

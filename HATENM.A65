@@ -1065,8 +1065,8 @@ clip:
 	tax
 	tya
 	sbc	scrole
-	cpx	>($200 + 16 + $20) ; #low
-	sbc	<($200 + 16 + $20) ; #high
+	cpx	#(>($200 + 16 + $20)) ; #low
+	sbc	#(<($200 + 16 + $20)) ; #high
 	ldx	savex
 	ldy	savey
 mntkr2:	rts
@@ -1433,10 +1433,10 @@ tekyds:
 	lda	timer
 	and	#$4
 	clc
-	adc	z:<kemuri ; #low
+	adc	#(<kemuri) ; #low
 	sta	pptr+0
 	lda	#0
-	adc	z:>kemuri ; #high
+	adc	#(>kemuri) ; #high
 	sta	pptr+1
 ;
 	lda	#2
@@ -1560,10 +1560,10 @@ dfldrw:
 	asl	a
 	asl	a
 	clc
-	adc	z:<dflpat ; #low
+	adc	#(<dflpat) ; #low
 	sta	pptr+0
 	lda	#0
-	adc	z:>dflpat ; #high
+	adc	#(>dflpat) ; #high
 	sta	pptr+1
 	jmp	put2x2
 ;
@@ -1579,7 +1579,7 @@ tekdrw:
 	clc
 	adc	bb
 ;	clc
-	adc	z:<thnpat	; #low
+	adc	#(<thnpat)	; #low
 	sta	pptr+0
 ;	lda	tekdir,x
 ;	and	#2
@@ -1592,7 +1592,7 @@ tekdrw:
 ;	sta	pptr+0
 ;
 	lda	#0
-	adc	z:>thnpat ; #high
+	adc	#(>thnpat) ; #high
 	sta	pptr+1
 	lda	aa
 	lsr	a
@@ -1760,10 +1760,10 @@ hakdsp:
 hakd00:	lda	timer
 	and	#$4
 	clc
-	adc	z:<kemuri ; #low
+	adc	#(<kemuri) ; #low
 	sta	pptr+0
 	lda	#0
-	adc	z:>kemuri ; #high
+	adc	#(>kemuri) ; #high
 	sta	pptr+1
 	lda	#2
 	sta	pcol
@@ -2472,10 +2472,10 @@ mchd10:	lda	mchflp
 	adc	mchflp
 	asl	a
 	clc
-	adc	z:<mchpat ; #low
+	adc	#(<mchpat) ; #low
 	sta	pptr+0
 	lda	#0
-	adc	z:>mchpat ; #high
+	adc	#(>mchpat) ; #high
 	sta	pptr+1
 	jmp	put2x3
 ;
@@ -2485,10 +2485,10 @@ mchd20:
 	lda	timer
 	and	#$4
 	clc
-	adc	<kemuri ; #low
+	adc	#(<kemuri) ; #low
 	sta	pptr+0
 	lda	#0
-	adc	>kemuri ; #high
+	adc	#(>kemuri) ; #high
 	sta	pptr+1
 	jmp	put2x2
 ;
@@ -2503,10 +2503,10 @@ mchd31:	tya
 	asl	a
 	asl	a
 ;	clc
-	adc	z:<makpat ; #low
+	adc	#(<makpat) ; #low
 	sta	pptr+0
 	lda	#0
-	adc	z:>makpat ; #high
+	adc	#(>makpat) ; #high
 	sta	pptr+1
 	jmp	put2x2	
 ;

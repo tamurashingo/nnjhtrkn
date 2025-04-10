@@ -89,7 +89,7 @@ nmivec:	; nmi cmd
 ;
 sprdma:	lda	#0
 	sta	oamadr
-	lda	>oambuf ; #high
+	lda	#(>oambuf) ; #high
 	sta	dmabnk			; sprite dma
 ;
 	lda	#0
@@ -263,7 +263,7 @@ clssub:
 	sta	clsdat
 	lda	#$20			; vram address 2000h
 	ldx	#0
-	jsr	a:setadr
+	jsr	setadr
 	ldy	#$08
 	ldx	#$00
 	lda	clsdat		;#CLRCOD		;#$20			; space code (20h)
@@ -626,8 +626,8 @@ numslp:	inx
 ;
 scrprt:
 ;power
-	lda	>($2000+32*3+29) ; #high
-	ldx	<($2000+32*3+29) ; #low
+	lda	#(>($2000+32*3+29)) ; #high
+	ldx	#(<($2000+32*3+29)) ; #low
 	sta	vramad
 	stx	vramad
 	lda	mandmg
@@ -635,8 +635,8 @@ scrprt:
 	adc	#$30
 	sta	vramdt	
 ;time
-	lda	>($2000+32*2+27) ; #high
-	ldx	<($2000+32*2+27) ; #low
+	lda	#(>($2000+32*2+27)) ; #high
+	ldx	#(<($2000+32*2+27)) ; #low
 	sta	vramad
 	stx	vramad
 	ldy	#2
@@ -653,8 +653,8 @@ upswrt:	lda	ups,y	;x
 	dey	;	dex
 	bpl	upswrt
 ;score
-scrpr1:	lda	>($2000+32+2)	;8) ; #high
-	ldx	<($2000+32+2)	;8) ; #low
+scrpr1:	lda	#(>($2000+32+2))	;8) ; #high
+	ldx	#(<($2000+32+2))	;8) ; #low
 	sta	vramad
 	stx	vramad
 	ldx	#0
@@ -667,8 +667,8 @@ scrplp:	lda	scoreb,x
 	lda	#'0'
 	sta	vramdt
 ;high score
-	lda	>($2000+32+12)	;20) ; #high
-	ldx	<($2000+32+12)	;20) ; #low
+	lda	#(>($2000+32+12))	;20) ; #high
+	ldx	#(<($2000+32+12))	;20) ; #low
 	sta	vramad
 	stx	vramad
 	ldx	#0
@@ -681,8 +681,8 @@ topplp:	lda	hscreb,x
 	lda	#'0'
 	sta	vramdt
 ;left
-	lda	>($2000+32*1+25)	;20) ; #high
-	ldx	<($2000+32*1+25)	;20) ; #low
+	lda	#(>($2000+32*1+25))	;20) ; #high
+	ldx	#(<($2000+32*1+25))	;20) ; #low
 	sta	vramad
 	stx	vramad
 	lda	leftb+0
@@ -818,16 +818,16 @@ scrclp:	sta	score,x
 	rts
 ;
 gamesc:
-	lda	>($2000+32*3+27) ; #high
-	ldx	<($2000+32*3+27) ; #low
+	lda	#(>($2000+32*3+27)) ; #high
+	ldx	#(<($2000+32*3+27)) ; #low
 	jsr	setadr
 	lda	#'P'
 	sta	vramdt
 	lda	#$3a
 	sta	vramdt
 ;
-	lda	>($2000+32*2+26) ; #high
-	ldx	<($2000+32*2+26) ; #low
+	lda	#(>($2000+32*2+26)) ; #high
+	ldx	#(<($2000+32*2+26)) ; #low
 	jsr	setadr
 	lda	#$ce	;mini clock
 	sta	vramdt
@@ -1244,12 +1244,12 @@ letmes:	dw	$2000+(32*11+12)
 	db	'LET',$27,'S',SPCCOD,'GO',0
 ;
 clemgt:
-	ldx	<($2000+32*6+23) ; #low
-	lda	>($2000+32*6+23) ; #high
+	ldx	#(<($2000+32*6+23)) ; #low
+	lda	#(>($2000+32*6+23)) ; #high
 	bne	aermgs	;	jmp	aermgs
 aremgt:
-	ldx	<($2000+32*8+18) ; #low
-	lda	>($2000+32*8+18) ; #high
+	ldx	#(<($2000+32*8+18)) ; #low
+	lda	#(>($2000+32*8+18)) ; #high
 aermgs:	jsr	setadr
 ;
 	ldy	#'0'
@@ -1499,8 +1499,8 @@ grdupm:
 	jsr	mesprt
 	PTRSET	cmmes5,indexr
   	jsr	mesprt
-	lda	>($2000+(32*9+17)) ; #high
-	ldx	<($2000+(32*9+17)) ; #low
+	lda	#(>($2000+(32*9+17))) ; #high
+	ldx	#(<($2000+(32*9+17))) ; #low
 	jsr	setadr
 	ldx	#0
 gredwr:	lda	grade,x
@@ -1827,13 +1827,13 @@ tkswrt:
 	ldy	#$35
 	sty	timbuf+3	
 ;
-	ldx	<($2000+32*14+20) ; #low
-	lda	>($2000+32*14+20) ; #high
+	ldx	#(<($2000+32*14+20)) ; #low
+	lda	#(>($2000+32*14+20)) ; #high
 	ldy	area
 	cpy	#15
 	bne	*+6
-	ldx	<($2000+32*18+20) ; #low
-	lda	>($2000+32*18+20) ; #high
+	ldx	#(<($2000+32*18+20)) ; #low
+	lda	#(>($2000+32*18+20)) ; #high
 	jsr	setadr
 	ldx	#0
 tskdlp:	lda	tksbuf,x
@@ -1842,13 +1842,13 @@ tskdlp:	lda	tksbuf,x
 	cpx	#3
 	bcc	tskdlp
 ;
-	ldx	<($2000+32*12+20) ; #low
-	lda	>($2000+32*12+20) ; #high
+	ldx	#(<($2000+32*12+20)) ; #low
+	lda	#(>($2000+32*12+20)) ; #high
 	ldy	area
 	cpy	#15
 	bne	*+6
-	ldx	<($2000+32*16+20) ; #low
-	lda	>($2000+32*16+20) ; #high
+	ldx	#(<($2000+32*16+20)) ; #low
+	lda	#(>($2000+32*16+20)) ; #high
 	jsr	setadr
 	ldx	#0
 timdlp:	lda	timbuf,x

@@ -10,10 +10,10 @@ scrlrg:
 	sta	screnb
 	lda	scrolh
 	clc
-	adc	<(60*8) ; #low
+	adc	#<(60*8) ; #low
 	tax
 	lda	scrole
-	adc	>(60*8) ; #high
+	adc	#>(60*8) ; #high
 	sta	crsptr
 	sta	wrtptr
 	cmp	#ARELEN
@@ -135,9 +135,9 @@ olnplp:	lda	$FF5C,y	;[olpadr],y  ITABUF-256+24 = -164 -> FF5C
 	asl	a
 	rol	indexr+1
 	clc
-	adc	<gamen ; #low
+	adc	#(<gamen) ; #low
 	sta	indexr+0
-	lda	>gamen ; #high
+	lda	#(>gamen) ; #high
 	adc	indexr+1
 	sta	indexr+1
 ;
