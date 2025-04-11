@@ -699,8 +699,8 @@ RET:	rts
 	.include	"HTWARP.SCR"
 ;
 	.include	"HATMAP.A65"
-;.segment "CHR"
-;	.incbin		"ninja.chr"
+.segment "CHR"
+	.incbin		"ninja.chr"
 ;
 	.ENDIF
 ;----------------------------------------------
