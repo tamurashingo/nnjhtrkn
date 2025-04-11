@@ -23,3 +23,6 @@ make clean
 がキャラクタ用のデータです。
 ご自分で適当にデータを作ってください。
 
+現在付属のデータを使用するとこのような画面になります。
+
+![Image](https://github.com/user-attachments/assets/b4380ec8-a8a9-4065-87d7-ec9ec67d7615)
