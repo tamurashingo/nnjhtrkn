@@ -49,10 +49,10 @@ bougen:
 	asl	a
 	rol	p0+1
 	clc
-	adc	#low bnstbl
+	adc	#(<bnstbl) ; #low
 	sta	p0+0
 	lda	p0+1
-	adc	#high bnstbl
+	adc	#(>bnstbl) ; #high
 	sta	p0+1
 	ldx	#BOUMAX-1
 bouglp:
@@ -89,7 +89,7 @@ bougsk:
 	lda	#0
 	sta	boupfc
 ;boss reqest (ochiru chikuwa)
-bosent:	ldx	#low (tiktbl-tikmen-1)
+bosent:	ldx	#(<(tiktbl-tikmen-1)) ; #low
 boselp:	lda	tikmen,x
 	cmp	bb
 	beq	boseok
@@ -717,10 +717,10 @@ clkdok:	lda	#$40
 	lda	timer
 	and	#4
 	clc
-	adc	#low clkpat
+	adc	#(<clkpat) ; #low
 	sta	pptr+0
 	lda	#0
-	adc	#high clkpat
+	adc	#(>clkpat) ; #high
 	sta	pptr+1
 	jmp	put2x2
 ;
@@ -916,10 +916,10 @@ tksdok:
 	and	#2
 	asl	a
 	clc
-	adc	#low tkspat
+	adc	#(<tkspat) ; #low
 	sta	pptr+0
 	lda	#0
-	adc	#high tkspat
+	adc	#(>tkspat) ; #high
 	sta	pptr+1	;	PTRSET	tkspat,pptr
 	lda	#2
 	sta	pcol
@@ -1155,4 +1155,3 @@ bosdrt:	rts
 ;
 ;
 ;
-

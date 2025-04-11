@@ -885,10 +885,10 @@ mncchk:
 	asl	a
 	rol	gamadr+1
 	clc
-	adc	#low gamen
+	adc	#(<gamen) ; #low
 	sta	gamadr+0
 	lda	gamadr+1
-	adc	#high gamen
+	adc	#(>gamen) ; #high
 	sta	gamadr+1
 ;
 	lda	mchky
@@ -1118,9 +1118,9 @@ mandrw:	txa
 	adc	p0+1
 	asl	a
 	clc
-	adc	#low hatchr
+	adc	#(<hatchr) ; #low
 	sta	pptr+0	;	sta	p2
-	lda	#high hatchr
+	lda	#(>hatchr) ; #high
 	adc	#0
 	sta	pptr+1	;	sta	p2+1
 	lda	mandir
@@ -1597,4 +1597,3 @@ timout:	lda	#0
 ;
 ;
 ;
-

@@ -43,7 +43,7 @@ prensk:	dex
 	lda	#8	;16
 	sta	tamrpt
 ;
-	ldx	#low (mizflg - takflg)
+	ldx	#(<(mizflg - takflg)) ; #low
 	lda	#0
 prenl1:	
 	sta	takflg,x
@@ -465,7 +465,7 @@ kanamv:	;kanasibari
 	ldx	#KANASH
 	lda	#0
 	sta	ninsta,x
-	lda	#(KANASH + 1) or $80
+	lda	#(KANASH + 1) .BITOR $80
 	jsr	ninpsb
 ;	sta	ninodr
 kansrt:
@@ -484,7 +484,7 @@ kirmov:
 	lda	#0
 	sta	kirflg
 	sta	ninsta,x
-	lda	#(KIRIGA + 1) or $80
+	lda	#(KIRIGA + 1) .BITOR $80
 	jsr	ninpsb
 ;	sta	ninodr	
 kirret:	
@@ -501,7 +501,7 @@ kummov:	lda	timer
 	lda	#0
 	sta	kumflg
 	sta	ninsta,x
-	lda	#(KUMONO + 1) or $80
+	lda	#(KUMONO + 1) .BITOR $80
 	jsr	ninpsb
 ;	sta	ninodr	
 kummrt:
@@ -608,7 +608,7 @@ shnend:
 	lda	#0
 	sta	ninsta,x
 ;
-	lda	#(GIRARU + 1) or $80
+	lda	#(GIRARU + 1) .BITOR $80
 	jsr	ninpsb
 ;	sta	ninodr
 	lda	#$ff
@@ -724,10 +724,10 @@ shndsp:
 ;	clc
 ;	adc	pptr+0
 	clc
-	adc	#low shnpat
+	adc	#(<shnpat) ; #low
 	sta	pptr+0
 	lda	#0
-	adc	#high shnpat
+	adc	#(>shnpat) ; #high
 	sta	pptr+1
 ;
 	lda	shnflg
@@ -856,7 +856,7 @@ dogend:	lda	#$ff
 	ldx	#HIBASI
 	lda	#0
 	sta	ninsta,x
-	lda	#(HIBASI + 1) or $80
+	lda	#(HIBASI + 1) .BITOR $80
 	jmp	ninpsb
 ;
 ;
@@ -1370,10 +1370,10 @@ spbdok:	and	#$7f
 	asl	a
 	asl	a
 	clc	
-	adc	#low spbpat
+	adc	#(<spbpat) ; #low
 	sta	pptr+0
 	lda	#0
-	adc	#high spbpat
+	adc	#(>spbpat) ; #high
 	sta	pptr+1
 	lda	spbxl
 	sta	pxl
@@ -1394,4 +1394,3 @@ spbpat:
 	db	$fa,$fb,$ee,$ef	;inrou
 	db	$b9,$8f,$de,$df	;key
 ;
-

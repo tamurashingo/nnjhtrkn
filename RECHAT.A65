@@ -10,10 +10,10 @@ scrlrg:
 	sta	screnb
 	lda	scrolh
 	clc
-	adc	#low (60*8)
+	adc	#<(60*8) ; #low
 	tax
 	lda	scrole
-	adc	#high (60*8)
+	adc	#>(60*8) ; #high
 	sta	crsptr
 	sta	wrtptr
 	cmp	#ARELEN
@@ -116,7 +116,7 @@ scsssk:	tya
 	sta	creg0
 	ldy	#256-24		;$0
 ;
-olnplp:	lda	ITABUF-256+24,y	;[olpadr],y
+olnplp:	lda	$FF5C,y	;[olpadr],y  ITABUF-256+24 = -164 -> FF5C
 	sta	vramdt
 	iny
 ;	cpy	#24	;24	;16
@@ -135,9 +135,9 @@ olnplp:	lda	ITABUF-256+24,y	;[olpadr],y
 	asl	a
 	rol	indexr+1
 	clc
-	adc	#low gamen
+	adc	#(<gamen) ; #low
 	sta	indexr+0
-	lda	#high gamen
+	lda	#(>gamen) ; #high
 	adc	indexr+1
 	sta	indexr+1
 ;
@@ -173,7 +173,7 @@ clplop:
 	lda	cstadr
 	jsr	setadr
 ;
-	lda	ITABUF+24-256+6,y	;[olpadr],y
+	lda	$FF62,y	;[olpadr],y ITABUF+24-256+6 = -158 -> FF62
 	sta	vramdt
 	txa
 	clc
@@ -190,9 +190,10 @@ clplop:
 ;
 ;
 ;
-CHRSFT	MACRO
+.macro	CHRSFT
+	.local RET
 	DEC	CHRBIT
-	BPL	?%K
+	BPL	RET
 	PHA
 	LDA	#7
 	STA	CHRBIT
@@ -200,14 +201,15 @@ CHRSFT	MACRO
 	STA	CHRSFD
 	PLA
 	INY
-	BNE	?%K
+	BNE	RET
 	INC	CHRBP+1
-?%K:	ASL	CHRSFD
-	ENDM
+RET:	ASL	CHRSFD
+.endmacro
 ;
-MAPSFT	MACRO
+.macro	MAPSFT
+	.local RET
 	DEC	MAPBIT
-	BPL	?%K
+	BPL	RET
 	PHA
 	LDA	#7
 	STA	MAPBIT
@@ -215,12 +217,13 @@ MAPSFT	MACRO
 	STA	MAPSFD
 	PLA
 	INY
-?%K:	ASL	MAPSFD
-	ENDM
+RET:	ASL	MAPSFD
+.endmacro
 ;
-COLSFT	MACRO
+.macro	COLSFT
+	.local RET
 	DEC	COLBIT
-	BPL	?%K
+	BPL	RET
 	PHA
 	LDA	#7
 	STA	COLBIT
@@ -228,8 +231,8 @@ COLSFT	MACRO
 	STA	COLSFD
 	PLA
 	INY
-?%K:	ASL	COLSFD
-	ENDM
+RET:	ASL	COLSFD
+.endmacro
 ;
 ;
 ITAREC:
@@ -249,7 +252,7 @@ ITAGDL:	CHRSFT
 	BCC	ITAGDL
 	ADC	#$5F	;ADD #$60   ( CARRY = ALWAYS 1 )
 ;
-ITAB0:	STA	ITABUF-256+24,X
+ITAB0:	STA	$FF5C,X ; ITABUF-256+24 = -164 -> FF5C
 	INX
 	BNE	ITARCL
 ;
@@ -274,9 +277,9 @@ ITAM1L:	MAPSFT
 	BCS	ITAM2
 ;
 	MAPSFT
-	ROL	ITABUF+30-256+6,X
+	ROL	$FF68,X ; ITABUF+30-256+6 = -152 -> ff68
 	MAPSFT
-	ROL	ITABUF+30-256+6,X
+	ROL	$FF68,X ; ITABUF+30-256+6 = -152 -> ff68
 	BCC	ITAM1L
 	INX
 	BNE	ITAM1L
@@ -299,9 +302,9 @@ ITAM2A:	MAPSFT
 ;
 ITAM2B:	LDA	ITADAT
 	ROL	A
-	ROL	ITABUF+30-256+6,X
+	ROL	$FF68,X ; ITABUF+30-256+6 = -152 -> ff68
 	ROL	A
-	ROL	ITABUF+30-256+6,X
+	ROL	$FF68,X ; ITABUF+30-256+6 = -152 -> ff68
 	BCC	ITAM2C
 	INX
 	BEQ	ITAACD
@@ -332,7 +335,7 @@ ITACS0:	COLSFT
 ITACSL:	COLSFT
 	ROL	A
 	BCC	ITACSL
-	STA	ITABUF+24-256+6,X
+	STA	$FF62,X ; ITABUF+24-256+6 = -158 -> FF62
 ITACS1:	INX
 	BNE	ITACS0
 ITAEOJ:	STY	COLBYT
@@ -374,4 +377,3 @@ NEWP1:	STA	ITABUF+30,X
 	STA	ITABUF+34
 	RTS
 ;
-
